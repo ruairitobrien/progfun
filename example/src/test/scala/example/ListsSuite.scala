@@ -4,6 +4,7 @@ import org.scalatest.FunSuite
 
 import org.junit.runner.RunWith
 import org.scalatest.junit.JUnitRunner
+import java.util.NoSuchElementException
 
 /**
  * This class implements a ScalaTest test suite for the methods in object
@@ -47,7 +48,7 @@ class ListsSuite extends FunSuite {
    * This allows tests to be written in a more readable manner:
    */
   test("one plus one is three?") {
-    assert(1 + 1 == 3) // This assertion fails! Go ahead and fix it.
+    assert(1 + 1 == 2) // This assertion fails! Go ahead and fix it.
   }
 
 
@@ -72,7 +73,7 @@ class ListsSuite extends FunSuite {
    * We recommend to always use the `===` equality operator when writing tests.
    */
   test("details why one plus one is not three") {
-    assert(1 + 1 === 3) // Fix me, please!
+    assert(1 + 1 === 2) // Fix me, please!
   }
 
 
@@ -117,8 +118,44 @@ class ListsSuite extends FunSuite {
   test("sum of a few numbers") {
     assert(sum(List(1,2,0)) === 3)
   }
+
+  test("sum of list with all zeros") {
+    assert(sum(List(0, 0, 0, 0, 0, 0, 0)) === 0)
+  }
+
+  test("sum of list with negatives") {
+    assert(sum(List(0, -1, 0, -8, 0, -99, 0)) === -108)
+  }
+
+  test("sum of list with all the same number") {
+    assert(sum(List(2, 2, 2, 2, 2, 2)) === 12)
+  }
+
+  test("sum an empty list") {
+    assert(sum(List()) === 0)
+  }
   
   test("max of a few numbers") {
     assert(max(List(3, 7, 2)) === 7)
   }
+
+  test("max of list with all zeros") {
+    assert(max(List(0, 0, 0, 0, 0, 0, 0)) === 0)
+  }
+
+  test("max of list with negatives where zero is max") {
+    assert(max(List(0, -1, 0, -8, 0, -99, 0)) === 0)
+  }
+
+  test("max of list with all the same number") {
+    assert(max(List(2, 2, 2, 2, 2, 2)) === 2)
+  }
+
+  test("max of an empty list") {
+    intercept[NoSuchElementException] {
+      assert(max(List()) === 0)
+    }
+  }
+
+
 }
