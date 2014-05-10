@@ -24,14 +24,12 @@ object Main {
    * Exercise 2
    */
   def balance(chars: List[Char]): Boolean = {
-
     def isBalanced(chars: List[Char], openBracketIndicator: Int): Boolean = {
       if(chars.isEmpty) openBracketIndicator == 0
       else if (chars.head == '(') isBalanced(chars.tail, openBracketIndicator + 1)
       else if (chars.head == ')') openBracketIndicator > 0 && isBalanced(chars.tail, openBracketIndicator - 1)
       else isBalanced(chars.tail, openBracketIndicator)
     }
-
     isBalanced(chars, 0)
   }
 
