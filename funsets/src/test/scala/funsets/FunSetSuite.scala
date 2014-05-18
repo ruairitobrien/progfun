@@ -106,12 +106,48 @@ class FunSetSuite extends FunSuite {
     }
   }
 
-  ignore("union contains all elements") {
+  test("union contains all elements") {
     new TestSets {
-      val s = union(s1, s2)
-      assert(contains(s, 1), "Union 1")
-      assert(contains(s, 2), "Union 2")
-      assert(!contains(s, 3), "Union 3")
+      val us1 = union(s1, s2)
+      val us2 = union(s2, s3)
+      val us3 = union(s1, s3)
+      assert(contains(us1, 1), "Union 1")
+      assert(contains(us1, 2), "Union 2")
+      assert(!contains(us1, 3), "Union 3")
+      assert(contains(us2, 2), "Union 4")
+      assert(contains(us2, 3), "Union 5")
+      assert(!contains(us2, 1), "Union 6")
+      assert(contains(us3, 1), "Union 7")
+      assert(contains(us3, 3), "Union 8")
+      assert(!contains(us3, 2), "Union 9")
+    }
+  }
+
+  test("Intersection contains correct elements") {
+    new TestSets {
+      val is1 = intersect(s1, s1)
+      val is2 = intersect(s2, s2)
+      val is3 = intersect(s3, s3)
+      assert(contains(is1, 1), "Intersection 1")
+      assert(contains(is2, 2), "Intersection 2")
+      assert(contains(is3, 3), "Intersection 3")
+      assert(!contains(is1, 4), "Intersection 4")
+      assert(!contains(is2, 5), "Intersection 5")
+      assert(!contains(is3, 6), "Intersection 6")
+    }
+  }
+
+  test("Diff contains correct elements") {
+    new TestSets {
+      val ds1 = diff(s1, s2)
+      val ds2 = diff(s2, s3)
+      val ds3 = diff(s1, s3)
+      assert(contains(ds1, 1), "Diff 1")
+      assert(!contains(ds1, 2), "Diff 2")
+      assert(contains(ds2, 2), "Diff 3")
+      assert(!contains(ds2, 3), "Diff 4")
+      assert(contains(ds3, 1), "Diff 5")
+      assert(!contains(ds3, 3), "Diff 6")
     }
   }
 }
