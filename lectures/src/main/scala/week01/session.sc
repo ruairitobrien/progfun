@@ -1,4 +1,3 @@
-import scala.annotation.tailrec
 object session {
   def abs(x: Double) = if (x < 0) -x else x
 
@@ -12,6 +11,10 @@ object session {
       (guess + x / guess) / 2
     sqrtIter(1.0)
   }
+
+  def test(x: Int): Int = ???
+
+
   sqrt(0.001)
   sqrt(0.1e-20)
   sqrt(1.0e20)
