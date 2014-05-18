@@ -150,4 +150,59 @@ class FunSetSuite extends FunSuite {
       assert(!contains(ds3, 3), "Diff 6")
     }
   }
+
+  test("Filter contains correct elements") {
+    new TestSets {
+      var fs1 = filter(s1, union(s1, s2))
+      var fs2 = filter(s2, diff(s2, s3))
+      var fs3 = filter(s3, x => x < 3)
+      var fs4 = filter(s3, x => x < 4)
+
+      assert(contains(fs1, 1), "Filter 1")
+      assert(!contains(fs1, 3), "Filter 2")
+      assert(contains(fs2, 2), "Filter 3")
+      assert(!contains(fs2, 3), "Filter 4")
+      assert(!contains(fs3, 3), "Filter 5")
+      assert(contains(fs4, 3), "Filter 6")
+    }
+  }
+
+  test("forall implemented") {
+    new TestSets {
+      assert(forall(s1, x => x == 1), "Forall 1")
+      assert(forall(s2, x => x == 2), "Forall 2")
+      assert(forall(s3, x => x == 3), "Forall 3")
+      assert(!forall(s1, x => x == 3), "Forall 4")
+      assert(!forall(s2, x => x == 1), "Forall 5")
+      assert(!forall(s3, x => x == 2), "Forall 6")
+    }
+  }
+
+  test("exists implemented") {
+    new TestSets {
+      assert(exists(s1, x => x == 1), "Exists 1")
+      assert(exists(s2, x => x == 2), "Exists 2")
+      assert(exists(s3, x => x == 3), "Exists 3")
+      assert(!exists(s1, x => x == 3), "Exists 4")
+      assert(!exists(s2, x => x == 1), "Exists 5")
+      assert(!exists(s3, x => x == 2), "Exists 6")
+    }
+  }
+
+  test("map implemented") {
+    new TestSets {
+      val ms1 = map(s1, x => x * 2)
+      val ms2 = map(s2, x => x * 2)
+      val ms3 = map(s3, x => x * 2)
+
+      assert(contains(ms1, 2), "Map 1")
+      assert(contains(ms2, 4), "Map 2")
+      assert(contains(ms3, 6), "Map 3")
+      assert(!contains(ms1, 1), "Map 4")
+      assert(!contains(ms2, 2), "Map 5")
+      assert(!contains(ms3, 3), "Map 6")
+
+    }
+  }
+
 }
