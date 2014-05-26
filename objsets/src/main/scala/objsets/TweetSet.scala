@@ -42,7 +42,7 @@ abstract class TweetSet {
    * Question: Can we implment this method here, or should it remain abstract
    * and be implemented in the subclasses?
    */
-  def filter(p: Tweet => Boolean): TweetSet = ???
+  def filter(p: Tweet => Boolean): TweetSet = filterAcc(p, new Empty)
 
   /**
    * This is a helper method for `filter` that propagetes the accumulated tweets.
@@ -55,7 +55,9 @@ abstract class TweetSet {
    * Question: Should we implment this method here, or should it remain abstract
    * and be implemented in the subclasses?
    */
-   def union(that: TweetSet): TweetSet = ???
+   def union(that: TweetSet): TweetSet
+
+  def mostRetweetedOpt : Option[Tweet]
 
   /**
    * Returns the tweet from this set which has the greatest retweet count.
@@ -66,7 +68,7 @@ abstract class TweetSet {
    * Question: Should we implment this method here, or should it remain abstract
    * and be implemented in the subclasses?
    */
-  def mostRetweeted: Tweet = ???
+  def mostRetweeted: Tweet = mostRetweetedOpt.get
 
   /**
    * Returns a list containing all tweets of this set, sorted by retweet count
@@ -77,7 +79,12 @@ abstract class TweetSet {
    * Question: Should we implment this method here, or should it remain abstract
    * and be implemented in the subclasses?
    */
-  def descendingByRetweet: TweetList = ???
+  def descendingByRetweet: TweetList = {
+    mostRetweetedOpt match {
+      case None => Nil
+      case Some(twt) => new Cons(twt, this.remove(twt).descendingByRetweet)
+    }
+  }
 
 
   /**
@@ -110,9 +117,9 @@ abstract class TweetSet {
 
 class Empty extends TweetSet {
 
-  def filterAcc(p: Tweet => Boolean, acc: TweetSet): TweetSet = ???
+  def filterAcc(p: Tweet => Boolean, acc: TweetSet): TweetSet = acc
 
-
+  override def mostRetweetedOpt : Option[Tweet] = None
   /**
    * The following methods are already implemented
    */
@@ -124,12 +131,25 @@ class Empty extends TweetSet {
   def remove(tweet: Tweet): TweetSet = this
 
   def foreach(f: Tweet => Unit): Unit = ()
+
+  override def union(that: TweetSet): TweetSet = that
 }
 
-class NonEmpty(elem: Tweet, left: TweetSet, right: TweetSet) extends TweetSet {
+case class NonEmpty(elem: Tweet, left: TweetSet, right: TweetSet) extends TweetSet {
 
-  def filterAcc(p: Tweet => Boolean, acc: TweetSet): TweetSet = ???
+  def filterAcc(p: Tweet => Boolean, acc: TweetSet): TweetSet = left.filterAcc(p,right.filterAcc(p, if (p(elem)) acc.incl(elem) else acc))
 
+
+  override def union(that :TweetSet):TweetSet= {
+    that match {
+      case NonEmpty(e, l, r) => this.incl(e) union l union r
+      case e: Empty => this
+    }
+  }
+
+  //override def union(that: TweetSet): TweetSet = ((left union right) union that) incl elem
+
+  override def mostRetweetedOpt: Option[Tweet] = Some(List(left.mostRetweetedOpt, right.mostRetweetedOpt, Some(elem)).flatten.maxBy(_.retweets))
 
   /**
    * The following methods are already implemented
@@ -184,17 +204,20 @@ object GoogleVsApple {
   val google = List("android", "Android", "galaxy", "Galaxy", "nexus", "Nexus")
   val apple = List("ios", "iOS", "iphone", "iPhone", "ipad", "iPad")
 
-  lazy val googleTweets: TweetSet = ???
-  lazy val appleTweets: TweetSet = ???
+  lazy val googleTweets: TweetSet = TweetReader.allTweets.filter((x:Tweet) => google.exists(x.text.contains))
+  lazy val appleTweets: TweetSet = TweetReader.allTweets.filter((y:Tweet) => apple.exists(y.text.contains))
 
   /**
    * A list of all tweets mentioning a keyword from either apple or google,
    * sorted by the number of retweets.
    */
-  lazy val trending: TweetList = ???
+  lazy val trending: TweetList = (googleTweets union appleTweets).descendingByRetweet
+
 }
 
 object Main extends App {
   // Print the trending tweets
   GoogleVsApple.trending foreach println
+
+  println("Hello")
 }
